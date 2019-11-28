@@ -136,7 +136,7 @@ public class Main {
 		for(int i=0; i < pair.size(); i+=2) {
 			//pair.add(i);
 			if(pair.size()-1 == i) {
-				pairsArray.add(new Pairs(pair.get(i), 0, -1));				//Adding lone pair
+				pairsArray.add(new Pairs(pair.get(i), -1, 0));				//Adding lone pair
 			}
 			else {
 				Pairs newPair = new Pairs(pair.get(i), pair.get(i+1), getCityDistance(cityDistance, pair.get(i), pair.get(i+1)));
@@ -144,11 +144,9 @@ public class Main {
 			}
 		}
 		
-		System.out.println(pairsArray.toString());
+		System.out.println("PairsArray: " +pairsArray.toString());
 		
-		
-		//returnPath.add(smallest);											//Adding the first city (Rockville) in
-		//returnPath.add(pairsArray.get(smallestIdx+1).getCityDistance());	//Adding the city that is in the same pair
+		//SOMETHING IS NOT CORRECT IN CHOOSING THE SMALLEST DISTANCE
 		for(int i = 0; i < pairsArray.size(); i++) {
 			int smallest = pairsArray.get(i).getCityDistance();
 			int smallestIdx = i;
@@ -159,8 +157,15 @@ public class Main {
 			//}
 			//else {
 				for(int j = i + 1; j < pairsArray.size(); j++) {
+					//Check if smallest is really the smallest
+					
+					//if(returnPath.size() != 0) {
+					//	smallestIdx = smallestDistance(returnPath, pairsArray, smallestIdx);
+					//	smallest = pairsArray.get(smallestIdx).getCityDistance();
+					//}
+					
 					if(pairsArray.get(j).getCityDistance() < smallest) {
-						if(pairsArray.get(j).getCityDistance() != -1) {			//Dont want lone pair as smallest
+						if(pairsArray.get(j).getCityDistance() != 0) {			//Don't want lone pair as smallest
 							smallest = pairsArray.get(j).getCityDistance();
 							smallestIdx = j;
 						}
@@ -170,26 +175,34 @@ public class Main {
 			//}
 			
 			System.out.println("Smallest: " +smallest);
+			System.out.println("Smallest Idx: " +smallestIdx);
 			
 			
 			//System.out.println("Smallest: " +smallest);
 			
-			int distanceToCityA, distanceToCityB, distanceToLone;
+			int distanceToCityA = 0;
+			int distanceToCityB = 0;
+			int distanceToLone = 0;
 			if(returnPath.size() == 0) {
-				//distanceToCityA = getCityDistance(cityDistance, pairsArray.get(smallestIdx).getCityA(), pairsArray.get(smallestIdx).getCityB());
-				returnPath.add(pairsArray.get(smallestIdx).getCityA());
-				returnPath.add(pairsArray.get(smallestIdx).getCityB());
+				returnPath.add(pairsArray.get(smallestIdx).getCityA());			//Adding the first city
+				returnPath.add(pairsArray.get(smallestIdx).getCityB());			//Adding the city that is in the same pair
 			}
 			else {
 				//Compare distance to 2 points in the smallest pair and the lone pair (if applicable)
 				if(hasLonePair == true) {			// Compare three points (one of them is the lone pair)
-					int oddConnectorIdx =returnPath.get(returnPath.size()-1);
-					int connectedIdxA = pairsArray.get(smallestIdx).getCityA();
-					int connectedIdxB = pairsArray.get(smallestIdx).getCityB();
+					int oddConnectorIdx = returnPath.get(returnPath.size()-1);		//currently the last city that is is returnPath array
+					int connectedIdxA = pairsArray.get(smallestIdx).getCityA();		//Getting the first new city in the pair
+					int connectedIdxB = pairsArray.get(smallestIdx).getCityB();		//Getting the second new city in the pair
 					distanceToCityA = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxA);
-					distanceToCityB = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxB);
+					if(connectedIdxB != -1)
+						distanceToCityB = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxB);
+					else
+						distanceToCityB = 0;
 					distanceToLone = getCityDistance(cityDistance, oddConnectorIdx, pairsArray.get(pairsArray.size()-1).getCityA());
 					
+					System.out.println("Odd Index to new City A Distance: " +distanceToCityA);
+					System.out.println("Odd Index to new City B Distance: " +distanceToCityB);
+					System.out.println("Odd Index to new Lone Pair Distance: " +distanceToLone +"\n");
 					
 					if(distanceToCityA < distanceToCityB && distanceToCityA < distanceToLone) {
 						returnPath.add(pairsArray.get(smallestIdx).getCityA());
@@ -221,6 +234,38 @@ public class Main {
 		return returnPath;			//Return array of sorted points.
 	}
 	
+	//Checks again if it is really the smallest distance (because 0 1 4, and now we are on i=2(which should be city3 and city5); however city2 and city6 should have smaller distance, so we need to adjust it.
+	/*private static int smallestDistance(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
+		boolean isSmallest = true;
+		int smallest = pairsArr.get(idx).getCityDistance();
+		int smallestIdx = idx;
+		
+		for(int k = 0; k < pairsArr.size(); k++) {
+			for(int j = 0; j < returnPath.size(); j++) {
+				if(pairsArr.get(k).getCityDistance() < smallest) {
+					if(pairsArr.get(k).getCityA() != returnPath.get(j) && pairsArr.get(k).getCityB() != returnPath.get(j)) {
+						smallest = pairsArr.get(k).getCityDistance();
+						smallestIdx = k;
+						System.out.println("smallestDistance method: " +smallestIdx);
+					}
+				}
+				else {
+					isSmallest = true;
+				}
+			}
+		}
+		
+		if(isSmallest == true) {
+			return smallestIdx;
+		}
+		return 0;
+		//System.out.println("smallestDistance method: " +smallest);
+	}
+	*/
+	
+	
+	
+	
 	
 	public static int getCityDistance(int[][] citryDistance, int cityA, int cityB) {
 		return citryDistance[cityA][cityB];
@@ -246,9 +291,9 @@ public class Main {
 	}
 	
 	/**git
-	 * Calculate truck driver’s salary
+	 * Calculate truck driverâ€™s salary
 	 * @param distance total road distance
-	 * @return truck driver’s salary
+	 * @return truck driverâ€™s salary
 	 */
 	public static double driversSalary(double distance){
 		return (distance * 0.56) + 1200;
@@ -294,7 +339,7 @@ public class Main {
 	 * Calculate the total cost of operating a single delivery truck on a single supply chain mission 
 	 * for supplying to the supermarket stores across the seven cities.
 	 * @param fuel the total cost of fuel
-	 * @param dSalary truck driver’s salary
+	 * @param dSalary truck driverâ€™s salary
 	 * @param hSalary helper's salary
 	 * @param hotel total cost of the hotel
 	 * @param meal total cost of meal
