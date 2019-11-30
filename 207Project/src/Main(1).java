@@ -153,7 +153,7 @@ public class Main {
 			int smallest = pairsArray.get(i).getCityDistance();
 			int smallestIdx = i;
 			
-			boolean inArray = smallestDistance(returnPath, pairsArray, smallestIdx);
+			boolean inArray = determineInArray(returnPath, pairsArray, smallestIdx);
 			
 			
 			if(inArray == true) {
@@ -284,12 +284,11 @@ public class Main {
 		
 		//System.out.println(returnPath);
 		
-		
 		return returnPath;			//Return array of sorted points.
 	}
 	
 	//Checks again if it is really the smallest distance (because 0 1 4, and now we are on i=2(which should be city3 and city5); however city2 and city6 should have smaller distance, so we need to adjust it.
-	private static boolean smallestDistance(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
+	private static boolean determineInArray(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
 		boolean isInArr = false;
 		int cityA = pairsArr.get(idx).getCityA();
 		int cityB = pairsArr.get(idx).getCityB();
