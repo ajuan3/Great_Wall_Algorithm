@@ -119,12 +119,14 @@ public class Main {
 	 * @return
 	 */
 	public static ArrayList<Integer> connectCityPath(ArrayList<Integer> pair, int[][] cityDistance){
-				
+	
 		ArrayList<Integer> returnPath = new ArrayList<Integer>();
 		int size = pair.size();
 		boolean hasLonePair =false;
 		boolean lonePairConnected = false;
 		ArrayList<Pairs> pairsArray = new ArrayList<Pairs>();
+		Pairs smallest;
+		int currentCity,smallestInd;
 		
 		//Checks if there is a lone pair
 		if (pair.size()%2!=0) {
@@ -145,174 +147,93 @@ public class Main {
 			}
 		}
 		
-		System.out.println("PairsArray: " +pairsArray.toString());
 		
-		//SOMETHING IS NOT CORRECT IN CHOOSING THE SMALLEST DISTANCE
-		for(int i = 0; i < pairsArray.size(); i++) {
-			int smallest = pairsArray.get(i).getCityDistance();
-			int smallestIdx = i;
+		
+		System.out.println("Pairs: "+pair);
+		System.out.println("pairsArray:"+pairsArray);
+		
+		//Adds first pair directly to the return array
+		returnPath.add(pairsArray.get(0).getCityA());
+		returnPath.add(pairsArray.get(0).getCityB());
+		pairsArray.remove(0);
+		
+		int pairSize = pairsArray.size();
+		//Runs for the length of the pairs array
+		for(int i=0; i<pairSize;i++) {
+			//Adds first pairs
 			
-			//for(int j = 0; j < pairsArray.size(); j++) {
-				//if(i != j) {
-					smallestIdx = smallestDistance(returnPath, pairsArray, smallestIdx);
-					smallest = pairsArray.get(smallestIdx).getCityDistance();
-				//}
-			//}
+			//sets standard small element to compare later ones to
+			smallest=pairsArray.get(0);
+			smallestInd=0;
 			
-			
-			//if(hasLonePair == true && i == (pair.size()-1)){				//Checking for lone pair
-			//	returnPath.add(pairsArray.get(i).getCityDistance());
-				//continue;
-			//}
-			//else {
-			/*
-				for(int j = i + 1; j < pairsArray.size(); j++) {
-					//Check if smallest is really the smallest
-					
-					//if(returnPath.size() != 0) {
-					//	smallestIdx = smallestDistance(returnPath, pairsArray, smallestIdx);
-					//	smallest = pairsArray.get(smallestIdx).getCityDistance();
-					//}
-					
-					if(pairsArray.get(j).getCityDistance() < smallest) {
-						if(pairsArray.get(j).getCityDistance() != 0) {			//Don't want lone pair as smallest
-							smallest = pairsArray.get(j).getCityDistance();
-							smallestIdx = j;
-						}
-					}
+//		System.out.println("smallest distance: "+smallest.getCityDistance());
+			//Cycles through the current pair array ( constantly removing from this array)
+			for (int j = 1;j < pairsArray.size(); j++) {
+				if(pairsArray.get(j).getCityDistance()<smallest.getCityDistance() && pairsArray.get(j).getCityDistance() != 0) {
+					smallest=pairsArray.get(i); //keeps track of smallest pair object
+					smallestInd=j; //keeps track of smallest pair object index
 				}
-				
-			//}
-			*/
-			
-			System.out.println("Smallest: " +smallest);
-			System.out.println("Smallest Idx: " +smallestIdx);
-			
-			
-			//System.out.println("Smallest: " +smallest);
-			
-			int distanceToCityA = 0;
-			int distanceToCityB = 0;
-			int distanceToLone = 0;
-			
-			if(returnPath.size() == 0) {
-				returnPath.add(pairsArray.get(smallestIdx).getCityA());			//Adding the first city
-				returnPath.add(pairsArray.get(smallestIdx).getCityB());			//Adding the city that is in the same pair
-				System.out.println("ReturnPath array so far: " +returnPath +"\n");
 			}
+			currentCity = returnPath.get(returnPath.size()-1); //The last element from the return array
+//			System.out.println("ReturnPath:"+returnPath);
+//			System.out.println("PairsArray: "+pairsArray);
+//			
+			
+			//Test the distances with the lone pair's distance to last city added to the return array
+			if (hasLonePair) {
+				//Checks if lone pair distance's is shorter than either city in the pair 
+				//(this is the pair with the smallest distance between the 2 cities inside the pair)
+				if(cityDistance[smallest.getCityA()][currentCity]   >    cityDistance[pair.get(pair.size()-1)][currentCity]
+						||
+						cityDistance[smallest.getCityB()][currentCity]   >    cityDistance[pair.get(pair.size()-1)][currentCity]) {
+					//Adds to the array
+					returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());
+					// remove lone pair from the pairsArray so its not checked again	
+					pairsArray.remove(pairsArray.size()-1);
+//					System.out.println("Adding lone pair with distance of "+cityDistance[pair.get(pair.size()-1)][currentCity]);
+//					System.out.println(pair.get(pair.size()-1));
+//					System.out.println(currentCity);
+					hasLonePair=false;
+				}
+			}
+			
+			//Ignore lone pair since it has already been added, Focuses on next two shortest distances
 			else {
-				//Compare distance to 2 points in the smallest pair and the lone pair (if applicable)
-				if(hasLonePair == true) {			// Compare three points (one of them is the lone pair)
-					int oddConnectorIdx = returnPath.get(returnPath.size()-1);		//currently the last city that is is returnPath array
-					int connectedIdxA = pairsArray.get(smallestIdx).getCityA();		//Getting the first new city in the pair
-					int connectedIdxB = pairsArray.get(smallestIdx).getCityB();		//Getting the second new city in the pair
-					distanceToCityA = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxA);
-					if(connectedIdxB != -1)
-						distanceToCityB = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxB);
-					else
-						distanceToCityB = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxA);			//Connects to lone pair cityA
-					if(lonePairConnected == false)
-						distanceToLone = getCityDistance(cityDistance, oddConnectorIdx, pairsArray.get(pairsArray.size()-1).getCityA());
-					else
-						distanceToLone = 0;
-					
-					System.out.println("Odd Index to new City A Distance: " +distanceToCityA);
-					System.out.println("Odd Index to new City B Distance: " +distanceToCityB);
-					System.out.println("Odd Index to new Lone Pair Distance: " +distanceToLone);
-					//System.out.println("ReturnPath array so far: " +returnPath +"\n");
-					
-					if(pairsArray.get(pairsArray.size()-1).getCityA() != returnPath.get(returnPath.size()-1)) {
-						if(distanceToLone != 0) {
-							if(distanceToCityA < distanceToCityB && distanceToCityA < distanceToLone) {
-								returnPath.add(pairsArray.get(smallestIdx).getCityA());
-								returnPath.add(pairsArray.get(smallestIdx).getCityB());
-							}
-							else if(distanceToCityB < distanceToCityA && distanceToCityB < distanceToLone) {
-								returnPath.add(pairsArray.get(smallestIdx).getCityB());
-								returnPath.add(pairsArray.get(smallestIdx).getCityA());
-							}
-							else
-								if(distanceToCityA == distanceToLone && distanceToCityB == distanceToLone)
-									returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());
-						}
-						else {
-							if(distanceToCityA < distanceToCityB) {
-								returnPath.add(pairsArray.get(smallestIdx).getCityA());
-								returnPath.add(pairsArray.get(smallestIdx).getCityB());
-							}
-							else {
-								returnPath.add(pairsArray.get(smallestIdx).getCityB());
-								returnPath.add(pairsArray.get(smallestIdx).getCityA());
-							}
-						}
-						
-					}
-					else {
-						lonePairConnected = true;
-						if(distanceToCityA <= distanceToCityB) {
-							returnPath.add(pairsArray.get(smallestIdx).getCityA());
-							returnPath.add(pairsArray.get(smallestIdx).getCityB());
-						}
-						else if(distanceToCityB < distanceToCityA) {
-							returnPath.add(pairsArray.get(smallestIdx).getCityB());
-							returnPath.add(pairsArray.get(smallestIdx).getCityA());
-						}
-					}
-					
-					System.out.println("ReturnPath array so far: " +returnPath +"\n");
-				}
-				else {								//Compare the two city points
-					distanceToCityA = getCityDistance(cityDistance, returnPath.get(returnPath.size()-1), pairsArray.get(smallestIdx).getCityA());
-					distanceToCityB = getCityDistance(cityDistance, returnPath.get(returnPath.size()-1), pairsArray.get(smallestIdx).getCityB());
-					
-					if(distanceToCityA < distanceToCityB) 
-						returnPath.add(distanceToCityA);
-					else
-						returnPath.add(distanceToCityB);
-				}
-			
+				returnPath.add(smallest.getCityA());
+				returnPath.add(smallest.getCityB());
+			//	System.out.println("Adding : "+smallest.getCityA()+" and "+smallest.getCityB());
+				pairsArray.remove(smallestInd);
 			}
+				
+			
 		}
 		
-		//System.out.println(returnPath);
+		returnPath.add(returnPath.get(0));
 		
+		System.out.println("ReturnPath:"+returnPath);
+//		if (returnPath.size() < 7) {
+//			returnPath.add(
+//		}
+		System.out.println(returnPath);
 		
 		return returnPath;			//Return array of sorted points.
 	}
 	
 	//Checks again if it is really the smallest distance (because 0 1 4, and now we are on i=2(which should be city3 and city5); however city2 and city6 should have smaller distance, so we need to adjust it.
-	private static int smallestDistance(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
-		boolean isSmallest = false;
-		int smallest = pairsArr.get(idx).getCityDistance();
-		int smallestIdx = idx;
+	private static boolean determineInArray(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
+		boolean isInArr = false;
+		int cityA = pairsArr.get(idx).getCityA();
+		int cityB = pairsArr.get(idx).getCityB();
 		
-		for(int i = 0; i < pairsArr.size(); i++) {
-			for(int j = 0; j < returnPath.size(); j++) {
-				if(pairsArr.get(i).getCityA() != returnPath.get(j) && pairsArr.get(i).getCityB() != returnPath.get(j)) {
-					//if(pairsArr.get(i).getCityDistance() < smallest && pairsArr.get(i).getCityDistance() != 0) {
-					//	smallest = pairsArr.get(i).getCityDistance();
-					//	smallestIdx = i;
-					//}
-					isSmallest = true;
-					
-					
-				}
-				else {
-					isSmallest = false;
-					break;
-				}
-			}
-		
-			if(isSmallest == true) {
-				smallest = pairsArr.get(i).getCityDistance();
-				smallestIdx = i;
+		for(int i = 0; i < returnPath.size(); i++) {
+			if(cityA == returnPath.get(i) || cityB == returnPath.get(i)) {
+				isInArr = true;
+				break;
 			}
 		}
 		
-		
-		
 		//System.out.println("smallestDistance method: " +smallest);
-		return smallestIdx;
+		return isInArr;
 	}
 	
 	
