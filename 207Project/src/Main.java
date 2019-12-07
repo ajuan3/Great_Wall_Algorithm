@@ -39,6 +39,39 @@ public class Main {
 		ArrayList<Integer> cityPath = new ArrayList<Integer>();
 		connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
 		//System.out.println(cityPath);
+		
+		// User interface
+		Scanner input = new Scanner(System.in);
+		int userCityNum;
+		int [][]distance;
+		
+		System.out.println("How many cities are there?");
+		userCityNum = input.nextInt();
+		distance = new int[userCityNum][userCityNum];
+		int []userList = new int[userCityNum];
+		
+		
+		for(int i = 0; i < userCityNum; i++) {
+			userList[i] = i;
+			
+			for(int j = 0; j < userCityNum; j++) {		
+				if(i == j) {
+					distance[i][j] = 0;
+				}
+				else {
+					System.out.print("Enter the distance from city " +(i+1) +" to " +(j+1) +": ");
+					distance[i][j] = input.nextInt();
+					//System.out.println("");
+				}
+				
+			}
+			System.out.println();
+
+		}
+	
+		
+		connectCityPath(pairedCities(userList,distance),distance);
+		
 	}
 	
 	
