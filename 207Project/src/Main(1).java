@@ -4,17 +4,13 @@ import java.util.Scanner;
 /**
  * 207 Traveling Salesman Project.
  * 11/14/2019
- * Great Wall Algorithm
+ * Pears Algorithm
  * 
  * 
- * 
- * @author Alex
- * @author Lucas
+ * @author Alex Juan
+ * @author Lucas Balangero
  * 
  */
-
-//Create Junit Tests
-
 public class Main {
 
 	public static void main(String[] args) {
@@ -32,42 +28,57 @@ public class Main {
 		};
 		
 		
+		ArrayList<Integer> cityPath = new ArrayList<Integer>();
 		
-		
-		//int[] list = {0,1,2,3,4,5,6};
-					//printCities(pairedCities(list, CITIES_DISTANCES), cityNames);
-		
-		//ArrayList<Integer> cityPath = new ArrayList<Integer>();
-		//connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
-						//System.out.println(cityPath);
-		
-		
-		//Test Case 2: 5 cities!!!!!!!
-		int [][]Test2DISTANCES = {
-				// 0    1    2    3    4
-				{  0,  13, 142, 225,  40},		//0			Rockville,
-				{ 13,   0, 136, 237,  34},		//1			Silver Spring,
-				{141, 135,   0, 305, 101},		//2			Philadelphia,
-				{226, 237, 304,   0, 248},		//3			Pittsburgh,
-				{ 40,  34, 106, 248,   0},		//4			Baltimore,	
-		};
-		
-		int[] test2List = {0,1,2,3,4};
-		connectCityPath(pairedCities(test2List, Test2DISTANCES), Test2DISTANCES);
-		
-		//Test Case 3: 4 cities!!!!!!!
-		int [][]Test3DISTANCES = {
-				// 0    1    2    3
-				{  0,  13, 142, 225},		//0			Rockville,
-				{ 13,   0, 136, 237},		//1			Silver Spring,
-				{141, 135,   0, 305},		//2			Philadelphia,
-				{226, 237, 304,   0},		//3			Pittsburgh,
-		};
-		
-		int[] test3List = {0,1,2,3};
-		connectCityPath(pairedCities(test3List, Test3DISTANCES), Test3DISTANCES);
+		int[] list = {0,1,2,3,4,5,6};
+		cityPath = connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
+		//printCities(cityPath, cityNames);
 		
 		/*
+			//Test Case 2: 5 cities!!!!!!!
+			int [][]CITY2DISTANCES = {
+					// 0    1    2    3    4
+					{  0,  13, 142, 225,  40},		//0			Rockville,
+					{ 13,   0, 136, 237,  34},		//1			Silver Spring,
+					{141, 135,   0, 305, 101},		//2			Philadelphia,
+					{226, 237, 304,   0, 248},		//3			Pittsburgh,
+					{ 40,  34, 106, 248,   0},		//4			Baltimore,	
+			};
+			
+			int[] test2List = {0,1,2,3,4};
+			cityPath = connectCityPath(pairedCities(test2List, CITY2DISTANCES), CITY2DISTANCES);
+		*/
+		
+		/*
+			//Test Case 3: 3 cities!!!!!!!
+			int [][]CITY3DISTANCES = {
+					// 0    1    2
+					{  0,  13, 142},		//0			Rockville,
+					{ 13,   0, 136},		//1			Silver Spring,
+					{141, 135,   0},		//2			Philadelphia,	
+			};
+			
+			int[] test3List = {0,1,2};
+			cityPath = connectCityPath(pairedCities(test3List, CITY3DISTANCES), CITY3DISTANCES);
+		*/
+		
+		/*
+			//Test Case 4: 4 cities!!!!!!!
+			int [][]CITY4DISTANCES = {
+					// 0    1    2    3
+					{  0,  13, 142, 225},		//0			Rockville,
+					{ 13,   0, 136, 237},		//1			Silver Spring,
+					{141, 135,   0, 305},		//2			Philadelphia,
+					{226, 237, 304,   0},		//3			Pittsburgh,
+			};
+			
+			int[] test4List = {0,1,2,3};
+			cityPath = connectCityPath(pairedCities(test4List, CITY4DISTANCES), CITY4DISTANCES);
+		*/
+		
+		
+		
+		//User Interface
 		Scanner input = new Scanner(System.in);
 		int userCityNum;
 		int [][]distance;
@@ -82,31 +93,48 @@ public class Main {
 			userList[i] = i;
 			
 			for(int j = 0; j < userCityNum; j++) {		
+				
 				if(i == j) {
 					distance[i][j] = 0;
 				}
 				else {
 					System.out.print("Enter the distance from city " +(i+1) +" to " +(j+1) +": ");
 					distance[i][j] = input.nextInt();
-					//System.out.println("");
 				}
 				
 			}
 			System.out.println();
-
 		}
-	
 		
-		connectCityPath(pairedCities(userList,distance),distance);
-		*/
+		input.close();
+		cityPath = connectCityPath(pairedCities(userList,distance),distance);
+		
+		
+		
+		//Calculate the total Distance
+		int total_Distance = totalDistance(cityPath, CITIES_DISTANCES);
+		double roadHours = hoursOnRoad(total_Distance);
+		double fuel_Cost = fuelCost(total_Distance);
+		double driver_Salary = driversSalary(total_Distance);
+		double helper_Salary = helpersSalary(total_Distance);
+		double hotel_Cost = hotelCost(userCityNum);
+		double meal_Cost = mealCost(userCityNum);
+		double maintenance_Cost = maintenanceCost(total_Distance);
+		double total_Cost = totalCostTruck(fuel_Cost, driver_Salary, helper_Salary, hotel_Cost, meal_Cost, maintenance_Cost);
+		
+		//Print the total distance traveled
+		System.out.println("Total Distance traveled: " +total_Distance);
+		
+		System.out.println("The city are traveled in the following order: ");
+		cityNames(cityPath, cityNames);
+		//printCities(cityPath, cityNames);
+		
 	}
 	
 	
 	
 	private static ArrayList<Integer> pairedCities(int[] city, int[][] cityD) {
-		ArrayList<Integer> pair = new ArrayList<Integer>();
-		//ArrayList<String> citiesPaired = new ArrayList<String>();
-		
+		ArrayList<Integer> pair = new ArrayList<Integer>();		
 		
 		int shortest, shortestIdx;
 		for(int i = 0; i < city.length; i++) {
@@ -136,11 +164,17 @@ public class Main {
 			}
 			
 			pair.add(i);
-			if(i != shortestIdx)
+			if(i != shortestIdx) {
 				pair.add(shortestIdx);
+				System.out.println(city[i] +" is paired with " +shortestIdx);
+			}
+			else {
+				if((city.length - 1)%2 == 0)		//If city has lone pair
+					System.out.println(city[i] +" is paired with " +shortestIdx +" due to LONE PAIR");
+				else
+					System.out.println(city[i] +" is paired with " +shortestIdx +" due to it is the shortest, BUT NOT LONE PAIR");
+			}
 			
-			
-			System.out.println(city[i] +" is paired with " +shortestIdx);
 			city[i] = -1;
 			city[shortestIdx] = -1;
 			
@@ -173,24 +207,23 @@ public class Main {
 	}
 	
 	/**
-	 * Comparing distances of pairs, finding smallest, and save into array
-	 * @param pair
-	 * @param cityDistance
-	 * @return
+	 * Create Pairs instances for each city pair, and compare the distances of pairs, find the smallest, and save into array.
+	 * @param pair the adjacent element in the list is a pair. Example: {0,1,2,6,4}, 0 and 1 is a pair, 2 and 6 is a pair, and 4 is a lone pair.
+	 * @param cityDistance the distances from each city
+	 * @return the pathway for deliver truck to follow
 	 */
 	public static ArrayList<Integer> connectCityPath(ArrayList<Integer> pair, int[][] cityDistance){
 	
 		ArrayList<Integer> returnPath = new ArrayList<Integer>();
-		int size = pair.size();
+		//int size = pair.size();
 		boolean hasLonePair =false;
-		boolean lonePairConnected = false;
 		ArrayList<Pairs> pairsArray = new ArrayList<Pairs>();
 		Pairs smallest;
 		int currentCity,smallestInd;
 		
 		//Checks if there is a lone pair
 		if (pair.size()%2!=0) {
-			size --;								//prevent loop from cycling into the lone pair
+			//size --;								//Prevent loop from cycling into the lone pair
 			hasLonePair = true;						//Keep track that there is a lone pair
 		}
 		
@@ -213,20 +246,20 @@ public class Main {
 		System.out.println("pairsArray:"+pairsArray);
 		
 		//Adds first pair directly to the return array
-		returnPath.add(pairsArray.get(0).getCityA());
-		returnPath.add(pairsArray.get(0).getCityB());
-		pairsArray.remove(0);
-		
+			returnPath.add(pairsArray.get(0).getCityA());			//Adding the first city
+			returnPath.add(pairsArray.get(0).getCityB());			//Adding the city that is in the same pair
+			pairsArray.remove(0);
+			
+			
 		int pairSize = pairsArray.size();
 		//Runs for the length of the pairs array
-		for(int i=0; i<pairSize;i++) {
-			//Adds first pairs
+		for(int i = 0; i < pairSize;i++) {
 			
-			//sets standard small element to compare later ones to
+			//Sets standard small element to compare later ones to
 			smallest=pairsArray.get(0);
 			smallestInd=0;
 			
-//		System.out.println("smallest distance: "+smallest.getCityDistance());
+			
 			//Cycles through the current pair array ( constantly removing from this array)
 			for (int j = 1;j < pairsArray.size(); j++) {
 				if(pairsArray.get(j).getCityDistance()<smallest.getCityDistance() && pairsArray.get(j).getCityDistance() != 0) {
@@ -235,172 +268,94 @@ public class Main {
 				}
 			}
 			currentCity = returnPath.get(returnPath.size()-1); //The last element from the return array
-//			System.out.println("ReturnPath:"+returnPath);
-//			System.out.println("PairsArray: "+pairsArray);
-//			
-		/*	
+		
+			//Distance from last element of reuturnPath array to comparing cities
+			int distanceToCityA = 0;
+			int distanceToCityB = 0;
+			int distanceToLonePair = 0;
+			
 			//Test the distances with the lone pair's distance to last city added to the return array
 			if (hasLonePair) {
 				if(pairsArray.size() != 1) {
-				//Checks if lone pair distance's is shorter than either city in the pair 
-				//(this is the pair with the smallest distance between the 2 cities inside the pair)
-					if(cityDistance[smallest.getCityA()][currentCity]   >    cityDistance[pair.get(pair.size()-1)][currentCity]
-							||
-							cityDistance[smallest.getCityB()][currentCity]   >    cityDistance[pair.get(pair.size()-1)][currentCity]) {
+					
+					distanceToLonePair = cityDistance[currentCity][pair.get(pair.size()-1)];			//Distance from last element of reuturnPath array to lone pair
+					distanceToCityA = getCityDistance(cityDistance, currentCity, smallest.getCityA());	//Distance from last element of reuturnPath array to smallest cityA
+					if(smallest.getCityB() != -1)
+						distanceToCityB = getCityDistance(cityDistance, currentCity, smallest.getCityB());	//Distance from last element of reuturnPath array to smallest cityB
+					
+					
+					//Checks if lone pair distance's is shorter than either city in the pair 
+					//(this is the pair with the smallest distance between the 2 cities inside the pair)
+					if(distanceToCityA   >   distanceToLonePair   &&   distanceToCityB   >   distanceToLonePair) {
 						//Adds to the array
 						returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());
+						
 						// remove lone pair from the pairsArray so its not checked again	
 						pairsArray.remove(pairsArray.size()-1);
-		//					System.out.println("Adding lone pair with distance of "+cityDistance[pair.get(pair.size()-1)][currentCity]);
-		//					System.out.println(pair.get(pair.size()-1));
-		//					System.out.println(currentCity);
-						hasLonePair=false;
-					}
-				}
-				else {
-					returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());
-					pairsArray.remove(pairsArray.size()-1);
-				}
-			}
-			
-			//Ignore lone pair since it has already been added, Focuses on next two shortest distances
-			else {
-				returnPath.add(smallest.getCityA());
-				returnPath.add(smallest.getCityB());
-			//	System.out.println("Adding : "+smallest.getCityA()+" and "+smallest.getCityB());
-				pairsArray.remove(smallestInd);
-			}
-		*/	
-			
-			
-			int distanceToCityA = 0;
-			int distanceToCityB = 0;
-			int distanceToLone = 0;
-			
-			if(returnPath.size() == 0) {
-				returnPath.add(pairsArray.get(smallestInd).getCityA());			//Adding the first city
-				returnPath.add(pairsArray.get(smallestInd).getCityB());			//Adding the city that is in the same pair
-				System.out.println("ReturnPath array so far: " +returnPath +"\n");
-				pairsArray.remove(smallestInd);
-			}
-			else {
-				//Compare distance to 2 points in the smallest pair and the lone pair (if applicable)
-				if(hasLonePair == true) {			// Compare three points (one of them is the lone pair)
-					int oddConnectorIdx = returnPath.get(returnPath.size()-1);		//currently the last city that is is returnPath array
-					int connectedIdxA = pairsArray.get(smallestInd).getCityA();		//Getting the first new city in the pair
-					int connectedIdxB = pairsArray.get(smallestInd).getCityB();		//Getting the second new city in the pair
-					distanceToCityA = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxA);
-					if(connectedIdxB != -1)
-						distanceToCityB = getCityDistance(cityDistance, oddConnectorIdx, connectedIdxB);
-					else
-						distanceToCityB = distanceToCityA;							//Connects to lone pair cityA
-					if(lonePairConnected == false)
-						distanceToLone = getCityDistance(cityDistance, oddConnectorIdx, pairsArray.get(pairsArray.size()-1).getCityA());
-					else
-						distanceToLone = 0;
-					
-					System.out.println("Odd Index to new City A Distance: " +distanceToCityA);
-					System.out.println("Odd Index to new City B Distance: " +distanceToCityB);
-					System.out.println("Odd Index to new Lone Pair Distance: " +distanceToLone);
-					//System.out.println("ReturnPath array so far: " +returnPath +"\n");
-					
-					//If lone pair in pairsArray array does not equal to the current last index of returnPath array
-					if(pairsArray.get(pairsArray.size()-1).getCityA() != returnPath.get(returnPath.size()-1)) {
-						if(lonePairConnected == false) {
-							if(distanceToCityA < distanceToCityB && distanceToCityA < distanceToLone) {
-								returnPath.add(pairsArray.get(smallestInd).getCityA());
-								returnPath.add(pairsArray.get(smallestInd).getCityB());
-							}
-							else if(distanceToCityB < distanceToCityA && distanceToCityB < distanceToLone) {
-								returnPath.add(pairsArray.get(smallestInd).getCityB());
-								returnPath.add(pairsArray.get(smallestInd).getCityA());
-							}
-							else {
-								returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());
-								lonePairConnected = true;
-							}
-							pairsArray.remove(smallestInd);
-						}
-						else {
-							if(distanceToCityA <= distanceToCityB) {
-								returnPath.add(pairsArray.get(smallestInd).getCityA());
-								returnPath.add(pairsArray.get(smallestInd).getCityB());
-							}
-							else {
-								returnPath.add(pairsArray.get(smallestInd).getCityB());
-								returnPath.add(pairsArray.get(smallestInd).getCityA());
-							}
-							pairsArray.remove(smallestInd);
-						}
 						
-					}
-					else {
-						lonePairConnected = true;
-						if(distanceToCityA < distanceToCityB) {
-							returnPath.add(pairsArray.get(smallestInd).getCityA());
-							returnPath.add(pairsArray.get(smallestInd).getCityB());
-						}
-						else {
-							returnPath.add(pairsArray.get(smallestInd).getCityB());
-							returnPath.add(pairsArray.get(smallestInd).getCityA());
-						}
-						pairsArray.remove(smallestInd);
+						hasLonePair=false;
+						continue;
 					}
 					
-					System.out.println("ReturnPath array so far: " +returnPath +"\n");
-				}
-				else {								//Compare the two city points
-					distanceToCityA = getCityDistance(cityDistance, returnPath.get(returnPath.size()-1), pairsArray.get(smallestInd).getCityA());
-					distanceToCityB = getCityDistance(cityDistance, returnPath.get(returnPath.size()-1), pairsArray.get(smallestInd).getCityB());
-					
-					if(distanceToCityA < distanceToCityB) {
-						returnPath.add(distanceToCityA);
-						returnPath.add(distanceToCityB);
+					if(distanceToCityA < distanceToCityB) {		//Add cityA first because it is shorter than cityB
+						returnPath.add(smallest.getCityA());
+						returnPath.add(smallest.getCityB());
 					}
-					else {
-						returnPath.add(distanceToCityB);
-						returnPath.add(distanceToCityA);
+					else {										//Add cityB first because it is shorter than cityA
+						returnPath.add(smallest.getCityB());
+						returnPath.add(smallest.getCityA());
 					}
 					pairsArray.remove(smallestInd);
+					continue;
 				}
-			
+				
+				returnPath.add(pairsArray.get(pairsArray.size()-1).getCityA());		//Add the only element in pairsArray
+				pairsArray.remove(pairsArray.size()-1);
 			}
+
+			//Ignore lone pair since it has already been added, Focuses on next two shortest distances
+			else {
+				distanceToCityA = getCityDistance(cityDistance, currentCity, smallest.getCityA());
+				distanceToCityB = getCityDistance(cityDistance, currentCity, smallest.getCityB());
+				
+				if(distanceToCityA < distanceToCityB) {		//Add cityA first because it is shorter than cityB
+					returnPath.add(smallest.getCityA());
+					returnPath.add(smallest.getCityB());
+				}
+				else {										//Add cityB first because it is shorter than cityA
+					returnPath.add(smallest.getCityB());
+					returnPath.add(smallest.getCityA());
+				}
+				pairsArray.remove(smallestInd);
+			}
+			
+			
 		}
 		
 		returnPath.add(returnPath.get(0));
 		
 		System.out.println("ReturnPath:"+returnPath);
-//		if (returnPath.size() < 7) {
-//			returnPath.add(
-//		}
-		System.out.println(returnPath);
 		
-		return returnPath;			//Return array of sorted points.
-		
-	}
-	
-	//Checks again if it is really the smallest distance (because 0 1 4, and now we are on i=2(which should be city3 and city5); however city2 and city6 should have smaller distance, so we need to adjust it.
-	/*private static boolean determineInArray(ArrayList<Integer> returnPath, ArrayList<Pairs> pairsArr, int idx) {
-		boolean isInArr = false;
-		int cityA = pairsArr.get(idx).getCityA();
-		int cityB = pairsArr.get(idx).getCityB();
-		
-		for(int i = 0; i < returnPath.size(); i++) {
-			if(cityA == returnPath.get(i) || cityB == returnPath.get(i)) {
-				isInArr = true;
+		for (int k = 0; k<returnPath.size() ;k++) {
+			if (returnPath.get(k)==-1) {
+				returnPath.remove(k);
 				break;
 			}
 		}
+		System.out.println(returnPath);
 		
-		//System.out.println("smallestDistance method: " +smallest);
-		return isInArr;
+		return returnPath;			//Return array of sorted points.
 	}
-	*/
 	
 	
 	
-	
-	
+	/**
+	 * Get the distance from one city to another
+	 * @param citryDistance the distances from each city
+	 * @param cityA the starting city
+	 * @param cityB the desired city
+	 * @return the distance from cityA to cityB
+	 */
 	public static int getCityDistance(int[][] citryDistance, int cityA, int cityB) {
 		return citryDistance[cityA][cityB];
 	}
@@ -412,7 +367,7 @@ public class Main {
 	 * @return total time in hours spent on the road
 	 */
 	public static double hoursOnRoad(double distance){
-		return distance *60;
+		return (distance / 60);
 	}
 	
 	/**
@@ -421,10 +376,10 @@ public class Main {
 	 * @return total cost of fuel
 	 */
 	public static double fuelCost(double distance){
-		 return (distance/7.0) * 3.32;
+		 return (distance / 7.0) * 3.32;
 	}
 	
-	/**git
+	/**
 	 * Calculate truck driver’s salary
 	 * @param distance total road distance
 	 * @return truck driver’s salary
@@ -484,20 +439,32 @@ public class Main {
 		return fuel + dSalary + hSalary + hotel + meal + maintenance;
 	}
 	
-	public static int totalDistance(int[][] array) {
-		
+	/**
+	 * Calculate the total distance of the trip
+	 * @param path the order of cities to travel
+	 * @param cityD the distances from each city
+	 * @return the total distance of the trip
+	 */
+	public static int totalDistance(ArrayList<Integer> path, int[][] cityD) {
 		int totalDistance = 0;
 		
-		/*for(int i = 0; i < array.length; i++) {
-			for(int j = 0; j < array[i].length; j++) {
-				totalDistance += array[i][j];
-			}
-		}*/
+		for(int i = 0; i < path.size(); i++) {
+			totalDistance += getCityDistance(cityD, path.get(i), path.get((i+1)%path.size()));
+		}
 		
 		return totalDistance;
 	}
 	
-	public static String cityNames() {
-		return null;
+	/**
+	 * Print out the order of cities to cover for the delivery truck 
+	 * @param path the order of cities to travel
+	 * @param cName the names of the cities
+	 */
+	public static void cityNames(ArrayList<Integer> path, String[] cName) {
+		
+		for(int i = 0; i < path.size(); i++) {
+			System.out.print(cName[path.get(i)] +"     ");
+		}
+		System.out.println();
 	}
 }
