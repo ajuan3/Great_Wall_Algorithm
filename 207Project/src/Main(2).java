@@ -4,7 +4,7 @@ import java.util.Scanner;
 /**
  * 207 Traveling Salesman Project.
  * 11/14/2019
- * Great Wall Algorithm
+ * Pears Algorithm
  * 
  * 
  * 
@@ -32,10 +32,10 @@ public class Main {
 		};
 		
 		
+		ArrayList<Integer> cityPath = new ArrayList<Integer>();
 		
-		
-		//int[] list = {0,1,2,3,4,5,6};
-		//connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
+		int[] list = {0,1,2,3,4,5,6};
+		cityPath = connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
 					//printCities(pairedCities(list, CITIES_DISTANCES), cityNames);
 		
 		
@@ -51,7 +51,7 @@ public class Main {
 			};
 			
 			int[] test2List = {0,1,2,3,4};
-			connectCityPath(pairedCities(test2List, CITY2DISTANCES), CITY2DISTANCES);
+			cityPath = connectCityPath(pairedCities(test2List, CITY2DISTANCES), CITY2DISTANCES);
 		*/
 		
 		/*
@@ -64,7 +64,7 @@ public class Main {
 			};
 			
 			int[] test3List = {0,1,2};
-			connectCityPath(pairedCities(test3List, CITY3DISTANCES), CITY3DISTANCES);
+			cityPath = connectCityPath(pairedCities(test3List, CITY3DISTANCES), CITY3DISTANCES);
 		*/
 		
 		/*
@@ -78,11 +78,11 @@ public class Main {
 			};
 			
 			int[] test4List = {0,1,2,3};
-			connectCityPath(pairedCities(test4List, CITY4DISTANCES), CITY4DISTANCES);
+			cityPath = connectCityPath(pairedCities(test4List, CITY4DISTANCES), CITY4DISTANCES);
 		*/
 		
 		
-		
+		//User Interface
 		Scanner input = new Scanner(System.in);
 		int userCityNum;
 		int [][]distance;
@@ -97,6 +97,7 @@ public class Main {
 			userList[i] = i;
 			
 			for(int j = 0; j < userCityNum; j++) {		
+				
 				if(i == j) {
 					distance[i][j] = 0;
 				}
@@ -107,12 +108,27 @@ public class Main {
 				
 			}
 			System.out.println();
-
 		}
-	
 		
-		connectCityPath(pairedCities(userList,distance),distance);
+		cityPath = connectCityPath(pairedCities(userList,distance),distance);
 		
+		
+		
+		//Calculate the total Distance
+		int total_Distance = totalDistance(cityPath, CITIES_DISTANCES);
+		double roadHours = hoursOnRoad(total_Distance);
+		double fuel_Cost = fuelCost(total_Distance);
+		double driver_Salary = driversSalary(total_Distance);
+		double helper_Salary = helpersSalary(total_Distance);
+		double hotel_Cost = hotelCost(userCityNum);
+		double meal_Cost = mealCost(userCityNum);
+		double maintenance_Cost = maintenanceCost(total_Distance);
+		double total_Cost = totalCostTruck(fuel_Cost, driver_Salary, helper_Salary, hotel_Cost, meal_Cost, maintenance_Cost);
+		
+		//Print the total distance traveled
+		System.out.println("Total Distance traveled: " +total_Distance);
+		
+		printCities(cityPath, cityNames);
 	}
 	
 	
@@ -203,7 +219,6 @@ public class Main {
 		ArrayList<Integer> returnPath = new ArrayList<Integer>();
 		//int size = pair.size();
 		boolean hasLonePair =false;
-		boolean lonePairConnected = false;
 		ArrayList<Pairs> pairsArray = new ArrayList<Pairs>();
 		Pairs smallest;
 		int currentCity,smallestInd;
@@ -445,15 +460,12 @@ public class Main {
 		return fuel + dSalary + hSalary + hotel + meal + maintenance;
 	}
 	
-	public static int totalDistance(int[][] array) {
-		
+	public static int totalDistance(ArrayList<Integer> path, int[][] cityD) {
 		int totalDistance = 0;
 		
-		/*for(int i = 0; i < array.length; i++) {
-			for(int j = 0; j < array[i].length; j++) {
-				totalDistance += array[i][j];
-			}
-		}*/
+		for(int i = 0; i < path.size(); i++) {
+			totalDistance += getCityDistance(cityD, path.get(i), path.get((i+1)%path.size()));
+		}
 		
 		return totalDistance;
 	}
