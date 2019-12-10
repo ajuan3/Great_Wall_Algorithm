@@ -14,25 +14,31 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
-		String[] cityNames = {"Rockville","Silver Spring","Philadelphia","PittsBurgh","Baltimore","Cleveland","New York City"};
-		
-		final int [][]CITIES_DISTANCES = {					//In order:
-				// 0    1    2    3    4    5    6
-				{  0,  13, 142, 225,  40, 352, 227},		//0			Rockville,
-				{ 13,   0, 136, 237,  34, 363, 222},		//1			Silver Spring,
-				{141, 135,   0, 305, 101, 432,  97},		//2			Philadelphia,
-				{226, 237, 304,   0, 248, 133, 371},		//3			Pittsburgh,
-				{ 40,  34, 106, 248,   0, 374, 192},		//4			Baltimore,
-				{352, 364, 431, 133, 375,   0, 462},		//5			Cleveland,
-				{228, 222,  97, 370, 188, 462,   0},		//6			New York City
-		};
-		
-		
 		ArrayList<Integer> cityPath = new ArrayList<Integer>();
 		
-		int[] list = {0,1,2,3,4,5,6};
-		cityPath = connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
-		//printCities(cityPath, cityNames);
+		String[] cityNames = {"Rockville","Silver Spring","Philadelphia","PittsBurgh","Baltimore","Cleveland","New York City"};
+		
+		/*
+			final int [][]CITIES_DISTANCES = {					//In order:
+					// 0    1    2    3    4    5    6
+					{  0,  13, 142, 225,  40, 352, 227},		//0			Rockville,
+					{ 13,   0, 136, 237,  34, 363, 222},		//1			Silver Spring,
+					{141, 135,   0, 305, 101, 432,  97},		//2			Philadelphia,
+					{226, 237, 304,   0, 248, 133, 371},		//3			Pittsburgh,
+					{ 40,  34, 106, 248,   0, 374, 192},		//4			Baltimore,
+					{352, 364, 431, 133, 375,   0, 462},		//5			Cleveland,
+					{228, 222,  97, 370, 188, 462,   0},		//6			New York City
+			};
+			
+			
+			
+			int[] list = {0,1,2,3,4,5,6};
+			cityPath = connectCityPath(pairedCities(list, CITIES_DISTANCES), CITIES_DISTANCES);
+			//printCities(cityPath, cityNames);
+			
+			System.out.println("The city are traveled in the following order: ");
+			cityNames(cityPath, cityNames);
+		*/
 		
 		/*
 			//Test Case 2: 5 cities!!!!!!!
@@ -80,11 +86,27 @@ public class Main {
 		
 		//User Interface
 		Scanner input = new Scanner(System.in);
-		int userCityNum;
+		int startCity = 0;
+		int userCityNum = 0;
 		int [][]distance;
 		
-		System.out.println("How many cities are there?");
-		userCityNum = input.nextInt();
+//		try {
+			System.out.println("How many cities are there?");
+			userCityNum = Integer.parseInt(input.next());
+			
+			while(userCityNum < 0) {
+				System.out.print("!!City number is invalid!! Re-enter the number of cities:");
+				userCityNum = Integer.parseInt(input.next());
+				System.out.println();
+			}
+//		}
+//		catch(NumberFormatException e) {
+//			System.out.println("Please Re-enter an integer number!!");
+//			System.out.print("The number of cities: ");
+//			userCityNum = Integer.parseInt(input.next());
+//			System.out.println();
+//		}
+		
 		distance = new int[userCityNum][userCityNum];
 		int []userList = new int[userCityNum];
 		
@@ -100,19 +122,38 @@ public class Main {
 				else {
 					System.out.print("Enter the distance from city " +(i+1) +" to " +(j+1) +": ");
 					distance[i][j] = input.nextInt();
+					
+					while(distance[i][j] < 0) {
+						System.out.println("!!Distance cannot be less than 0!!");
+						System.out.print("Re-enter the distance from city " +(i+1) +" to " +(j+1) +": ");
+						distance[i][j] = input.nextInt();
+					}
 				}
 				
 			}
 			System.out.println();
 		}
 		
+		//Input the starting city
+		System.out.println("What is the starting city? (Enter an integer number. Ex: City 1 is Rocville, enter 1 as starting city)");
+		System.out.print("Starting city: City ");
+		startCity = (input.nextInt() - 1);
+		
+		while(startCity < 0 || startCity >= userCityNum) {
+			System.out.println("!!City not contained as your previous input!!");
+			System.out.print("Re-enter the starting city: City ");
+			startCity = (input.nextInt() - 1);
+		}
+		
+		System.out.println();
+
 		input.close();
 		cityPath = connectCityPath(pairedCities(userList,distance),distance);
 		
 		
 		
 		//Calculate the total Distance
-		int total_Distance = totalDistance(cityPath, CITIES_DISTANCES);
+		int total_Distance = totalDistance(cityPath, distance);
 		double roadHours = hoursOnRoad(total_Distance);
 		double fuel_Cost = fuelCost(total_Distance);
 		double driver_Salary = driversSalary(total_Distance);
@@ -122,17 +163,23 @@ public class Main {
 		double maintenance_Cost = maintenanceCost(total_Distance);
 		double total_Cost = totalCostTruck(fuel_Cost, driver_Salary, helper_Salary, hotel_Cost, meal_Cost, maintenance_Cost);
 		
-		//Print the total distance traveled
-		System.out.println("Total Distance traveled: " +total_Distance);
 		
 		System.out.println("The city are traveled in the following order: ");
 		cityNames(cityPath, cityNames);
 		//printCities(cityPath, cityNames);
 		
+		//Print the total distance traveled
+		System.out.println("Total Distance traveled: " +total_Distance);
+		
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @param city
+	 * @param cityD
+	 * @return
+	 */
 	private static ArrayList<Integer> pairedCities(int[] city, int[][] cityD) {
 		ArrayList<Integer> pair = new ArrayList<Integer>();		
 		
@@ -166,45 +213,45 @@ public class Main {
 			pair.add(i);
 			if(i != shortestIdx) {
 				pair.add(shortestIdx);
-				System.out.println(city[i] +" is paired with " +shortestIdx);
+				//System.out.println(city[i] +" is paired with " +shortestIdx);
 			}
-			else {
-				if((city.length - 1)%2 == 0)		//If city has lone pair
-					System.out.println(city[i] +" is paired with " +shortestIdx +" due to LONE PAIR");
-				else
-					System.out.println(city[i] +" is paired with " +shortestIdx +" due to it is the shortest, BUT NOT LONE PAIR");
-			}
+//			else {
+//				if((city.length - 1)%2 == 0)		//If city has lone pair
+//					System.out.println(city[i] +" is paired with " +shortestIdx +" due to LONE PAIR");
+//				else
+//					System.out.println(city[i] +" is paired with " +shortestIdx +" due to it is the shortest, BUT NOT LONE PAIR");
+//			}
 			
 			city[i] = -1;
 			city[shortestIdx] = -1;
 			
 		}
 		
-		System.out.println(pair);
-		System.out.println();
+//		System.out.println(pair);
+//		System.out.println();
 		
 		//citiesPaired = printCities(pair);
 		
 		return pair;
 	}
 	
-	public static void printCities(ArrayList<Integer> pList, String[] cNames){
-		
-		for(int i = 0; i < pList.size(); i++) {
-			if(i%2 == 0) {
-				if(pList.size()-1 == i) {
-					System.out.println(cNames[pList.get(i)] +" is a lone pair");
-				}
-				else {
-					System.out.print(cNames[pList.get(i)] +" is paried with ");
-				}
-			}
-			else {
-				System.out.println(cNames[pList.get(i)]);
-			}
-		}
-		
-	}
+//	public static void printCities(ArrayList<Integer> pList, String[] cNames){
+//		
+//		for(int i = 0; i < pList.size(); i++) {
+//			if(i%2 == 0) {
+//				if(pList.size()-1 == i) {
+//					System.out.println(cNames[pList.get(i)] +" is a lone pair");
+//				}
+//				else {
+//					System.out.print(cNames[pList.get(i)] +" is paried with ");
+//				}
+//			}
+//			else {
+//				System.out.println(cNames[pList.get(i)]);
+//			}
+//		}
+//		
+//	}
 	
 	/**
 	 * Create Pairs instances for each city pair, and compare the distances of pairs, find the smallest, and save into array.
@@ -242,8 +289,8 @@ public class Main {
 		
 		
 		
-		System.out.println("Pairs: "+pair);
-		System.out.println("pairsArray:"+pairsArray);
+//		System.out.println("Pairs: "+pair);
+//		System.out.println("pairsArray:"+pairsArray);
 		
 		//Adds first pair directly to the return array
 			returnPath.add(pairsArray.get(0).getCityA());			//Adding the first city
@@ -334,7 +381,7 @@ public class Main {
 		
 		returnPath.add(returnPath.get(0));
 		
-		System.out.println("ReturnPath:"+returnPath);
+		//System.out.println("ReturnPath:"+returnPath);
 		
 		for (int k = 0; k<returnPath.size() ;k++) {
 			if (returnPath.get(k)==-1) {
@@ -342,7 +389,7 @@ public class Main {
 				break;
 			}
 		}
-		System.out.println(returnPath);
+		//System.out.println(returnPath);
 		
 		return returnPath;			//Return array of sorted points.
 	}
@@ -353,7 +400,7 @@ public class Main {
 	 * Get the distance from one city to another
 	 * @param citryDistance the distances from each city
 	 * @param cityA the starting city
-	 * @param cityB the desired city
+	 * @param cityB the desired city to travel to
 	 * @return the distance from cityA to cityB
 	 */
 	public static int getCityDistance(int[][] citryDistance, int cityA, int cityB) {
