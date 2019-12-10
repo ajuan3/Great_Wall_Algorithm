@@ -21,7 +21,7 @@ public class Pairs {
 	}
 	
 	/**
-	 * Makes the two cities and distances frm each dependent upon the parameter
+	 * Makes the two cities and distances from each dependent upon the parameter
 	 * @param cityA the starting city
 	 * @param cityB the desired city to travel to
 	 * @param cityDistance the distance from cityA to cityB
