@@ -42,7 +42,7 @@ public class Pairs {
 	
 	/**
 	 * Setter Method - set the distances from two cities
-	 * @param cityDistance
+	 * @param cityDistance the distance from two cities
 	 */
 	public void setCityDistance(int cityDistance) {
 		this.cityDistance = cityDistance;
