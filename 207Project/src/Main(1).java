@@ -9,7 +9,7 @@ import java.util.Scanner;
  * 
  * @author Alex Juan
  * @author Lucas Balangero
- * 
+ * @version 1
  */
 public class Main {
 
