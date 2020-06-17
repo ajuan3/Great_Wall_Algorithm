@@ -21,7 +21,9 @@ Pear Algorithm was made by considering the nearest neighbor algorithm but trying
 <p align="center">
   <image src="images/step2.png" width="550"/>
 </p>
+
 ### Step3 - Forming the path
 <p align="center">
   <image src="images/step3.png" width="550"/>
 </p>
+
